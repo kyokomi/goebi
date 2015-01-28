@@ -6,7 +6,6 @@ import (
 	"time"
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"encoding/json"
 )
 
@@ -47,9 +46,6 @@ func (c Client) Send(notice *Notice) error {
 
 	u := c.options.createNoticeBaseURL()
 	
-	// TODO: check
-	fmt.Println(u)
-	
 	res, err := c.client.Post(u, "application/json", bytes.NewReader(data))
 	if err != nil {
 		return err
@@ -57,19 +53,8 @@ func (c Client) Send(notice *Notice) error {
 	
 	defer res.Body.Close()
 	
-	// TODO: check
-	
-	data, err = ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-	fmt.Println(string(data))
-
-	if res.StatusCode == http.StatusCreated {
-		fmt.Println("新しいエラーだ！")
-		
-	} else if res.StatusCode == http.StatusOK {
-		fmt.Println("また同じエラーだ")
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("error response code %d", res.StatusCode)
 	}
 
 	return nil

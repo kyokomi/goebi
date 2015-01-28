@@ -5,7 +5,14 @@ import (
 	"flag"
 	"log"
 	"errors"
+	"fmt"
+	"net/http"
+	"github.com/guregu/kami"
+	"golang.org/x/net/context"
 )
+
+
+var errbit *gobit.Client
 
 func main() {
 	
@@ -14,16 +21,28 @@ func main() {
 	flag.StringVar(&apiPath, "path", "/api/v3/projects", "errbit apiPath.")
 	flag.StringVar(&apiKey, "key", "", "errbit app apikey.")
 	flag.Parse()
-	
-	c := gobit.New(gobit.Options{
+
+	errbit = gobit.New(gobit.Options{
 		Host: hostName,
 		ApiPath: apiPath,
 		ApiKey: apiKey,
 	})
 	
-	n := gobit.NewNotice(errors.New("errorだよ!!"), nil)
-	
-	if err := c.Send(n); err != nil {
-		log.Fatalln(err)
-	}
+	serve()
 }
+
+func serve() {
+	fmt.Println("serve start")
+
+	kami.Get("/", func(_ context.Context, _ http.ResponseWriter, r *http.Request) {
+		
+		n := gobit.NewNotice(errors.New("errorだよ"), r)
+		if err := errbit.Send(n); err != nil {
+			log.Fatalln(err)
+		}
+	})
+	
+	kami.Serve()
+}
+
+
