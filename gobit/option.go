@@ -1,8 +1,8 @@
-package gobit
+package goebi
 
 import "fmt"
 
-// Options gobit Client options
+// Options goebi Client options
 type Options struct {
 	// Host (required) hostName example `http://localhost:3000`
 	Host string

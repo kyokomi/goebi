@@ -1,10 +1,10 @@
-package gobit
+package goebi
 
 import (
 	"runtime"
 	"strings"
 
-	"github.com/kyokomi/gobit/gobit/notice"
+	"github.com/kyokomi/goebi/goebi/notice"
 )
 
 // StackFilterFunc stackTraceのFilter

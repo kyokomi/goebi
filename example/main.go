@@ -8,11 +8,11 @@ import (
 	"net/http"
 
 	"github.com/guregu/kami"
-	"github.com/kyokomi/gobit/gobit"
+	"github.com/kyokomi/goebi/goebi"
 	"golang.org/x/net/context"
 )
 
-var errbit *gobit.Client
+var errbit *goebi.Client
 
 func main() {
 
@@ -22,7 +22,7 @@ func main() {
 	flag.StringVar(&apiKey, "key", "", "errbit app apikey.")
 	flag.Parse()
 
-	errbit = gobit.New(gobit.Options{
+	errbit = goebi.New(goebi.Options{
 		Host:    hostName,
 		APIPath: apiPath,
 		APIKey:  apiKey,
@@ -36,7 +36,7 @@ func serve() {
 
 	kami.Get("/", func(_ context.Context, _ http.ResponseWriter, r *http.Request) {
 
-		n := gobit.NewNotice(errors.New("errorだよ"))
+		n := goebi.NewNotice(errors.New("errorだよ"))
 		n.SetEnvRuntime()
 		n.SetHTTPRequest(r)
 

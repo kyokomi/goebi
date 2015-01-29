@@ -1,4 +1,4 @@
-package gobit
+package goebi
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kyokomi/gobit/gobit/notice"
+	"github.com/kyokomi/goebi/goebi/notice"
 )
 
 // TODO: とりあえずgobrake参考
