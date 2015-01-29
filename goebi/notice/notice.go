@@ -105,7 +105,7 @@ func (n *Notice) SetHTTPRequest(req *http.Request) {
 // SetRuntime AirBrake用
 func (n *Notice) SetRuntime() {
 
-	n.Context.Version = runtime.Version()
+	n.Context.Language = runtime.Version()
 	n.Context.OS = runtime.GOOS
 	n.Env["architecture"] = runtime.GOARCH
 
@@ -120,7 +120,7 @@ func (n *Notice) SetRuntime() {
 // SetEnvRuntime errbit用 errbitはおそらくContext見てない？ので全部envに入れる
 func (n *Notice) SetEnvRuntime() {
 
-	n.Env["version"] = runtime.Version()
+	n.Env["language"] = runtime.Version()
 	n.Env["os"] = runtime.GOOS
 	n.Env["architecture"] = runtime.GOARCH
 
