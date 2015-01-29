@@ -5,11 +5,15 @@ Go library for accessing the [errbit](https://github.com/errbit/errbit) API
 
 ## Install
 
-TODO:
+```
+go get -u github.com/kyokomi/gobit/gobit
+```
 
 ## Usage
 
-TODO:
+```
+import "github.com/kyokomi/gobit/gobit"
+```
 
 ## License
 
@@ -18,3 +22,4 @@ TODO:
 ## Author
 
 [kyokomi](https://github.com/kyokomi)
+
