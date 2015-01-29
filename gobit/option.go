@@ -4,24 +4,43 @@ import "fmt"
 
 // Options gobit Client options
 type Options struct {
-	// Host hostName example `http://localhost:3000`
+	// Host (required) hostName example `http://localhost:3000`
 	Host string
-	// ApiPath apiPath example `/api/v3/projects`
-	ApiPath string
-	// ApiKey apiKey is issued when you register the app to errbit.
-	ApiKey string
+	// ProjectID is found AirBrake.io in the URL.
+	ProjectID string
+	// ApiPath (required) apiPath example `/api/v3/projects`
+	APIPath string
+	// ApiKey (required) apiKey is issued when you register the app to errbit.
+	APIKey string
 }
 
+// v3 API
 func (opt Options) createNoticeBaseURL() string {
 
-	if opt.Host[len(opt.Host)-1] == '/' {
-		opt.Host = opt.Host[:len(opt.Host)-1]
+	host := opt.Host
+	if host[0] == '/' {
+		host = host[1:]
 	}
 
-	if opt.ApiPath[len(opt.ApiPath)-1] == '/' {
-		opt.ApiPath = opt.ApiPath[:len(opt.ApiPath)-1]
+	if host[len(host)-1] == '/' {
+		host = host[:len(host)-1]
 	}
-	
+
+	apiPath := opt.APIPath
+	if apiPath[0] == '/' {
+		apiPath = apiPath[1:]
+	}
+
+	if apiPath[len(apiPath)-1] == '/' {
+		apiPath = apiPath[:len(apiPath)-1]
+	}
+
+	// ProjectIDなしならApiKeyを使う
+	projectID := opt.ProjectID
+	if projectID == "" {
+		projectID = opt.APIKey
+	}
+
 	// http://localhost:8000/api/v3/projects/xxxxx/notices?key=xxxxx
-	return fmt.Sprintf("%s/%s/%s/%s", opt.Host, opt.ApiPath, opt.ApiKey, "notices?key=" + opt.ApiKey)
+	return fmt.Sprintf("%s/%s/%s/%s", host, apiPath, projectID, "notices?key="+opt.APIKey)
 }

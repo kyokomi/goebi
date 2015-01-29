@@ -3,22 +3,25 @@ package gobit
 import (
 	"runtime"
 	"strings"
+
+	"github.com/kyokomi/gobit/gobit/notice"
 )
 
-type stackFilterFunc func (file string, line int, packageName, funcName string) bool
+// StackFilterFunc stackTraceのFilter
+type StackFilterFunc func(file string, line int, packageName, funcName string) bool
 
-func defaultStackTrace() []StackFrame {
-	return stackTrace(func (_ string, _ int, packageName, funcName string) bool {
+func defaultStackTrace() []notice.BackTrace {
+	return stackTrace(func(_ string, _ int, packageName, funcName string) bool {
 		return packageName == "runtime" && funcName == "panic"
 	})
 }
 
 // TODO: まるぱくりなのであとで考える
-func stackTrace(filter stackFilterFunc) []StackFrame {
+func stackTrace(filter StackFilterFunc) []notice.BackTrace {
 	// stackTrace -> newNotice -> NewNoticeWithFilter or NewNotice
 	startFrame := 3
-	
-	stack := []StackFrame{}
+
+	stack := []notice.BackTrace{}
 	for i := startFrame; ; i++ {
 		pc, file, line, ok := runtime.Caller(i)
 		if !ok {
@@ -29,7 +32,7 @@ func stackTrace(filter stackFilterFunc) []StackFrame {
 			stack = stack[:0]
 			continue
 		}
-		stack = append(stack, StackFrame{
+		stack = append(stack, notice.BackTrace{
 			File: file,
 			Line: line,
 			Func: funcName,

@@ -1,16 +1,19 @@
 package gobit
 
 import (
-	"net/http"
-	"net"
-	"time"
 	"bytes"
-	"fmt"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net"
+	"net/http"
+	"time"
+
+	"github.com/kyokomi/gobit/gobit/notice"
 )
 
 // TODO: とりあえずgobrake参考
-var defaultHttpClient = &http.Client{
+var defaultHTTPClient = &http.Client{
 	Transport: &http.Transport{
 		Proxy: http.ProxyFromEnvironment,
 		Dial: func(network, addr string) (net.Conn, error) {
@@ -23,38 +26,43 @@ var defaultHttpClient = &http.Client{
 
 // Client is an errbit client.
 type Client struct {
-	client  *http.Client
+	client    *http.Client
 	noticeURL string
-	options Options
+	options   Options
 }
 
+// New errbitのClientを生成します
 func New(opt Options) *Client {
-	
+
 	c := Client{}
-	c.client = defaultHttpClient
+	c.client = defaultHTTPClient
 	c.noticeURL = opt.createNoticeBaseURL()
 	c.options = opt
-	
+
 	return &c
 }
 
-func (c Client) Send(notice *Notice) error {
-	data, err := json.Marshal(notice)
+// SendNotice エラー通知します
+func (c Client) SendNotice(n *notice.Notice) error {
+
+	data, err := json.Marshal(n)
 	if err != nil {
 		return err
 	}
 
 	u := c.options.createNoticeBaseURL()
-	
+
 	res, err := c.client.Post(u, "application/json", bytes.NewReader(data))
 	if err != nil {
 		return err
 	}
-	
+
 	defer res.Body.Close()
-	
+
 	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("error response code %d", res.StatusCode)
+		data, _ := ioutil.ReadAll(res.Body)
+
+		return fmt.Errorf("error response code %d %s", res.StatusCode, string(data))
 	}
 
 	return nil
