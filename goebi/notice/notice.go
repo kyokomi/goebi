@@ -102,32 +102,28 @@ func (n *Notice) SetHTTPRequest(req *http.Request) {
 	}
 }
 
-// SetRuntime AirBrake用
-func (n *Notice) SetRuntime() {
 
-	n.Context.Language = runtime.Version()
-	n.Context.OS = runtime.GOOS
-	n.Env["architecture"] = runtime.GOARCH
+}
+
+// SetRuntime setup context default runtime.
+func (n *Notice) SetRuntime() {
+	n.Context.Language = runtime.GOOS
+	n.Context.Version = runtime.Version()
 
 	if hostname, err := os.Hostname(); err == nil {
-		n.Env["hostname"] = hostname
+		n.Context.URL = hostname
 	}
 	if wd, err := os.Getwd(); err == nil {
 		n.Context.RootDirectory = wd
 	}
 }
 
-// SetEnvRuntime errbit用 errbitはおそらくContext見てない？ので全部envに入れる
+// SetEnvRuntime setup context and env default runtime.
 func (n *Notice) SetEnvRuntime() {
+	n.SetRuntime()
 
-	n.Env["language"] = runtime.Version()
-	n.Env["os"] = runtime.GOOS
+	n.Env["language"] = n.Context.Language
+	n.Env["version"] = n.Context.Version
+
 	n.Env["architecture"] = runtime.GOARCH
-
-	if hostname, err := os.Hostname(); err == nil {
-		n.Env["hostname"] = hostname
-	}
-	if wd, err := os.Getwd(); err == nil {
-		n.Env["rootDirectory"] = wd
-	}
 }
