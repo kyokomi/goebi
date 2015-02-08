@@ -10,11 +10,13 @@ import (
 // Notice  error内容
 type Notice struct {
 	Notifier Notifier               `json:"notifier"`
+	Context  Context                `json:"context"`
 	Errors   []ErrorReport          `json:"errors"`
+
+	// optional
 	Env      map[string]interface{} `json:"environment"`
-	Session  map[string]interface{} `json:"session"`
 	Params   map[string]interface{} `json:"params"`
-	Context  Context                `json:"context`
+	Session  map[string]interface{} `json:"session"`
 }
 
 // Notifier error送信者
@@ -22,6 +24,38 @@ type Notifier struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 	URL     string `json:"url"`
+}
+
+// Context context
+type Context struct {
+	// エラーになったURL等
+	URL              string `json:"url"`
+
+	// TODO: 未使用？
+	SourceMapEnabled bool   `json:"sourceMapEnabled"`
+
+	// Where
+	// Controllerなどを指定
+	Component        string `json:"component"`
+	// Controllerのメソッド等を指定（Handler）
+	Action           string `json:"action"`
+
+	// AppServerの情報
+	Language         string `json:"language"`
+	Version          string `json:"version"`
+
+	// User情報
+	User
+
+	RootDirectory    string `json:"rootDirectory"`
+}
+
+type User struct {
+	UserID           int    `json:"userId"`
+	UserName         string `json:"userName"`
+	UserUsername     string `json:"userUsername"`
+	UserEmail        string `json:"userEmail"`
+	UserAgent        string `json:"userAgent"`
 }
 
 // ErrorReport エラー情報
@@ -33,19 +67,10 @@ type ErrorReport struct {
 
 // BackTrace stackTrace
 type BackTrace struct {
-	File string `json:"file"`
-	Line int    `json:"line"`
-	Func string `json:"function"`
-}
-
-// Context context
-type Context struct {
-	URL           string `json:"url"`
-	OS            string `json:"is"`
-	Language      string `json:"language"`
-	Environment   string `json:"environment"`
-	RootDirectory string `json:"rootDirectory"`
-	Version       string `json:"version"`
+	File     string `json:"file"`
+	Line     int    `json:"line"`
+	Column   int    `json:"column"`
+	Func     string `json:"function"`
 }
 
 // NewNotice エラー通知を作成
@@ -77,14 +102,14 @@ func (n *Notice) SetHTTPRequest(req *http.Request) {
 	n.Context.URL = req.URL.String()
 
 	if ua := req.Header.Get("User-Agent"); ua != "" {
-		n.Env["userAgent"] = ua
+		n.Context.UserAgent = ua
 	}
 
 	for k, v := range req.Header {
 		if len(v) == 1 {
-			n.Env[k] = v[0]
+			n.Env["HTTP_" + k] = v[0]
 		} else {
-			n.Env[k] = v
+			n.Env["HTTP_" + k] = v
 		}
 	}
 
@@ -102,7 +127,15 @@ func (n *Notice) SetHTTPRequest(req *http.Request) {
 	}
 }
 
+// SetUserInfo setup context.user
+func (n *Notice) SetUserInfo(user User) {
+	n.Context.User = user
+}
 
+// SetWhere setup context.where
+func (n *Notice) SetWhere(packageName string, methodName string) {
+	n.Context.Component = packageName
+	n.Context.Action = methodName
 }
 
 // SetRuntime setup context default runtime.
