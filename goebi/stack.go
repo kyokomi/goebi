@@ -16,7 +16,6 @@ func defaultStackTrace() []notice.BackTrace {
 	})
 }
 
-// TODO: まるぱくりなのであとで考える
 func stackTrace(filter StackFilterFunc) []notice.BackTrace {
 	// stackTrace -> newNotice -> NewNoticeWithFilter or NewNotice
 	startFrame := 3
@@ -42,7 +41,6 @@ func stackTrace(filter StackFilterFunc) []notice.BackTrace {
 	return stack
 }
 
-// TODO: まるぱくりなのであとで考える
 func packageFuncName(pc uintptr) (string, string) {
 	f := runtime.FuncForPC(pc)
 	if f == nil {
