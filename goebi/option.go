@@ -8,7 +8,7 @@ type Options struct {
 	Host string
 	// ProjectID is found AirBrake.io in the URL.
 	ProjectID string
-	// ApiPath (required) apiPath example `/api/v3/projects`
+	// ApiPath apiPath example `/api/v3/projects`
 	APIPath string
 	// ApiKey (required) apiKey is issued when you register the app to errbit.
 	APIKey string
@@ -27,6 +27,10 @@ func (opt Options) createNoticeBaseURL() string {
 	}
 
 	apiPath := opt.APIPath
+	if apiPath == "" {
+		apiPath = "/api/v3/projects"
+	}
+
 	if apiPath[0] == '/' {
 		apiPath = apiPath[1:]
 	}
