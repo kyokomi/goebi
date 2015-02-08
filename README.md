@@ -1,6 +1,8 @@
 goebi
 ========================
 
+![ebi.png](https://qiita-image-store.s3.amazonaws.com/0/40887/754c3389-09ec-fdf3-9099-05a40cfb5599.png "ebi.png")
+
 Go library for accessing the [errbit](https://github.com/errbit/errbit) API
 
 ## Install
@@ -14,6 +16,10 @@ go get -u github.com/kyokomi/goebi/goebi
 ```
 import "github.com/kyokomi/goebi/goebi"
 ```
+
+## Demo
+
+https://github.com/kyokomi/goebi/blob/master/demo
 
 ## License
 
