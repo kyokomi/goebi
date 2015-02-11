@@ -5,18 +5,19 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"runtime/pprof"
 )
 
 // Notice  error内容
 type Notice struct {
-	Notifier Notifier               `json:"notifier"`
-	Context  Context                `json:"context"`
-	Errors   []ErrorReport          `json:"errors"`
+	Notifier Notifier      `json:"notifier"`
+	Context  Context       `json:"context"`
+	Errors   []ErrorReport `json:"errors"`
 
 	// optional
-	Env      map[string]interface{} `json:"environment"`
-	Params   map[string]interface{} `json:"params"`
-	Session  map[string]interface{} `json:"session"`
+	Env     map[string]interface{} `json:"environment"`
+	Params  map[string]interface{} `json:"params"`
+	Session map[string]interface{} `json:"session"`
 }
 
 // Notifier error送信者
@@ -29,33 +30,33 @@ type Notifier struct {
 // Context context
 type Context struct {
 	// エラーになったURL等
-	URL              string `json:"url"`
+	URL string `json:"url"`
 
 	// TODO: 未使用？
-	SourceMapEnabled bool   `json:"sourceMapEnabled"`
+	SourceMapEnabled bool `json:"sourceMapEnabled"`
 
 	// Where
 	// Controllerなどを指定
-	Component        string `json:"component"`
+	Component string `json:"component"`
 	// Controllerのメソッド等を指定（Handler）
-	Action           string `json:"action"`
+	Action string `json:"action"`
 
 	// AppServerの情報
-	Language         string `json:"language"`
-	Version          string `json:"version"`
+	Language string `json:"language"`
+	Version  string `json:"version"`
 
 	// User情報
 	User
 
-	RootDirectory    string `json:"rootDirectory"`
+	RootDirectory string `json:"rootDirectory"`
 }
 
 type User struct {
-	UserID           int    `json:"userId"`
-	UserName         string `json:"userName"`
-	UserUsername     string `json:"userUsername"`
-	UserEmail        string `json:"userEmail"`
-	UserAgent        string `json:"userAgent"`
+	UserID       int    `json:"userId"`
+	UserName     string `json:"userName"`
+	UserUsername string `json:"userUsername"`
+	UserEmail    string `json:"userEmail"`
+	UserAgent    string `json:"userAgent"`
 }
 
 // ErrorReport エラー情報
@@ -67,10 +68,10 @@ type ErrorReport struct {
 
 // BackTrace stackTrace
 type BackTrace struct {
-	File     string `json:"file"`
-	Line     int    `json:"line"`
-	Column   int    `json:"column"`
-	Func     string `json:"function"`
+	File   string `json:"file"`
+	Line   int    `json:"line"`
+	Column int    `json:"column"`
+	Func   string `json:"function"`
 }
 
 // NewNotice エラー通知を作成
@@ -107,9 +108,9 @@ func (n *Notice) SetHTTPRequest(req *http.Request) {
 
 	for k, v := range req.Header {
 		if len(v) == 1 {
-			n.Env["HTTP_" + k] = v[0]
+			n.Env["HTTP_"+k] = v[0]
 		} else {
-			n.Env["HTTP_" + k] = v
+			n.Env["HTTP_"+k] = v
 		}
 	}
 
@@ -159,4 +160,13 @@ func (n *Notice) SetEnvRuntime() {
 	n.Env["version"] = n.Context.Version
 
 	n.Env["architecture"] = runtime.GOARCH
+}
+
+func (n *Notice) SetProfiles() {
+
+	profiles := pprof.Profiles()
+
+	for _, profile := range profiles {
+		n.Env["pprof_"+profile.Name()] = profile.Count()
+	}
 }

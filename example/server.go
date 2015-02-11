@@ -43,13 +43,14 @@ func index(_ http.ResponseWriter, r *http.Request) {
 	var n *notice.Notice
 	n = goebi.NewNotice(errors.New("Test error"))
 	n.SetUserInfo(notice.User{
-		UserID: 111111111,
-		UserName: "test name",
+		UserID:       111111111,
+		UserName:     "test name",
 		UserUsername: "kyokomi",
-		UserEmail: "example@mail.com",
+		UserEmail:    "example@mail.com",
 	})
 	n.SetWhere("example", "index")
 	n.SetEnvRuntime()
+	n.SetProfiles()
 	n.SetHTTPRequest(r)
 
 	if err := ebi.SendNotice(n); err != nil {
