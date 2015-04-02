@@ -52,7 +52,7 @@ type Context struct {
 }
 
 type User struct {
-	UserID       int    `json:"userId"`
+	UserID       int64  `json:"userId"`
 	UserName     string `json:"userName"`
 	UserUsername string `json:"userUsername"`
 	UserEmail    string `json:"userEmail"`
