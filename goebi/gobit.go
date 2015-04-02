@@ -43,7 +43,7 @@ func New(opt Options) *Client {
 }
 
 // SendNotice エラー通知します
-func (c Client) SendNotice(n *notice.Notice) error {
+func (c Client) SendNotice(n notice.Notice) error {
 
 	data, err := json.Marshal(n)
 	if err != nil {
