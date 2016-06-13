@@ -59,11 +59,15 @@ func (c Client) SendNotice(n notice.Notice) error {
 
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
+	if !isSuccess(res.StatusCode) {
 		data, _ := ioutil.ReadAll(res.Body)
 
 		return fmt.Errorf("error response code %d %s", res.StatusCode, string(data))
 	}
 
 	return nil
+}
+
+func isSuccess(statusCode int) bool {
+	return statusCode >= 200 && statusCode < 300
 }
